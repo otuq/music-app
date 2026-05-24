@@ -1,19 +1,67 @@
-import TodoList from './components/TodoList';
-import Counter from './components/Counter';
-
-type Todo = {
-  id: number;
-  title: string;
-}
+// import { createPost } from './actions/createPost';
+// import Counter from './components/Counter';
+// import TodoQuery from './components/TodoQuery';
+import PostForm from './components/PostForm';
+import { prisma } from '@/src/lib/prisma';
+import DeleteButton from './components/DeleteButton';
+import Link from 'next/link';
 
 export default async function HomePage() {
-  const response = await fetch("https://jsonplaceholder.typicode.com/todos?_limit=5")
-  const todos: Todo[] = await response.json()
+  // データベースの post テーブルから複数のデータをすべて取得するという Prisma の命令
+  const posts = await prisma.post.findMany({
+    //orderBy: { createdAt: "desc" }: データを並び替えるオプション。
+    //createdAt（作成日時）をもとに、desc（降順 = 新しい順）でデータを取得。
+    orderBy: {
+      createdAt: "desc"
+    }
+  })
   return (
     <main className="p-5">
-      <h1 className="text-2xl mb-10">Todo List</h1>
-      <TodoList todos={todos} className="space-y-10" />
-      <Counter />
+      <PostForm />
+      <ul className='space-y-5'>
+        {posts.map((post) => {
+          return (
+            <li key={post.id}>
+              <span>{post.title}</span>
+              <DeleteButton id={post.id} />
+              <Link href={`/posts/${post.id}/edit` as any}>Edit</Link>
+            </li>
+          )
+        }
+        )}
+      </ul>
     </main>
   )
 }
+// export default async function HomePage() {
+//   return (
+//     <main className="p-5">
+//       <h1 className="text-2xl mb-10">Todo List</h1>
+//       <TodoQuery />
+//       <Counter />
+//     </main>
+//   )
+// }
+// export default async function HomePage() {
+//   return (
+//     <main className="p-5">
+//       <form
+//         action={createPost}
+//         className="flex flex-col gap-4 max-w-sm"
+//       >
+//         <input
+//           type="text"
+//           name="title"
+//           placeholder="title"
+//           className="border p-2"
+//         />
+
+//         <button
+//           className="border p-2"
+//         >
+//           Submit
+//         </button>
+//       </form>
+//     </main>
+//   )
+// }
