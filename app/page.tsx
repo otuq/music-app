@@ -3,6 +3,7 @@ import { prisma } from '@/src/lib/prisma';
 import DeleteButton from './components/DeleteButton';
 import Link from 'next/link';
 import { auth } from '@/auth';
+import type { Post } from "@prisma/client"
 
 export default async function HomePage() {
   const session = await auth()
@@ -12,7 +13,7 @@ export default async function HomePage() {
     }
   }) : null
 
-  const posts = user ? await prisma.post.findMany({
+  const posts: Post[] = user ? await prisma.post.findMany({
     where: {
       userId: user.id
     },
