@@ -13,7 +13,7 @@ export default async function HomePage() {
     }
   }) : null
 
-  const posts: Post[] = user ? await prisma.post.findMany({
+  const posts = user ? await prisma.post.findMany({
     where: {
       userId: user.id
     },
@@ -30,7 +30,7 @@ export default async function HomePage() {
       </div>
 
       <ul className='space-y-5'>
-        {posts.map((post) => {
+        {posts.map((post: Post) => {
           const editHref = `/posts/${post.id}/edit` as const
           return (
             <li key={post.id}>
